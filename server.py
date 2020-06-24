@@ -24,12 +24,14 @@ def index():
 
         # Save query image
         img = Image.open(file.stream)  # PIL image
-        uploaded_img_path = "static/uploaded/" + datetime.now().isoformat().replace(":", ".") + "_" + file.filename
+        uploaded_img_path = "static/uploaded/{}".format(
+            datetime.now().isoformat().replace(":", ".") + "_" + file.filename)
         img.save(uploaded_img_path)
 
         # Run search
         query = fe.extract(img)
-        dists = np.linalg.norm(features-query, axis=1)  # L2 distances to features
+        # L2 distances to features
+        dists = np.linalg.norm(features-query, axis=1)  # Broadcast!
         ids = np.argsort(dists)[:30]  # Top 30 results
         scores = [(dists[id], img_paths[id]) for id in ids]
 
@@ -40,5 +42,5 @@ def index():
         return render_template('index.html')
 
 
-if __name__=="__main__":
+if __name__ == "__main__":
     app.run("0.0.0.0")
